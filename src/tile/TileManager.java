@@ -9,46 +9,55 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 public class TileManager {
 
 	GamePanel gp;
-	Tile[] tiles;
-	int mapTileNumber[][];
+	public Tile[] tiles;
+	public int mapTileNumber[][];
 	
 	public TileManager(GamePanel gp) {
 		this.gp = gp;
 		
-		tiles = new Tile[10];
-		mapTileNumber = new int[gp.maxScreenCol][gp.maxScreenRow];
+		tiles = new Tile[11];
+		mapTileNumber = new int[gp.maxWorldCol][gp.maxWorldRow];
 		getTileImage();
 		loadMap();
 	}
 	
 	public void getTileImage() {
 		
+		// Baldosas de background arenoso
+		setup(0, "bgSand", false);
+		// Baldosas de suelo de castillo
+		setup(1, "SueloCastillo", false);
+		// Baldosas de piedra
+		setup(2, "Muro", true);
+		// Baldosas de tierra con el borde hacia la izquierda
+		setup(3, "TierraBordeIzquierda", false);
+		// Baldosas de tierra con el borde hacia arriba
+		setup(4, "TierraBordeArriba", false);
+		// Baldosas de tierra normal
+		setup(5, "TierraNormal", false);
+		// Baldosas de casa pequeña
+		setup(6, "CasaPequeñaSobreARena", false);
+		// Baldosas de borde
+		setup(7, "Stone", true);
+		// Baldosas de agua
+		setup(8, "Water", true);
+		// Arbol seco 1
+		setup(9, "ArbolSecoSobreTierra1", true);
+	}
+	
+	public void setup(int index, String imagePath, boolean collision) {
+		UtilityTool uTool = new UtilityTool();
 		try {
-			
-			// Baldosas de background arenoso
-			tiles[0] = new Tile();
-			tiles[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/bgSand.png"));
-			// Baldosas de tierra con el borde hacia abajo
-			tiles[1] = new Tile();
-			tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/TierraBordeAbajo.png"));
-			// Baldosas de tierra con el borde hacia la derecha
-			tiles[2] = new Tile();
-			tiles[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/TierraBordeDerecha.png"));
-			// Baldosas de tierra con el borde hacia la izqierda
-			tiles[3] = new Tile();
-			tiles[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/TierraBordeIzquierda.png"));
-			// Baldosas de tierra con el borde hacia arriba
-			tiles[4] = new Tile();
-			tiles[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/TierraBordeArriba.png"));
-			// Baldosas de Agua
-			tiles[5] = new Tile();
-			tiles[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Water.png"));
-			
-		} catch(IOException e) {
+			tiles[index] = new Tile();
+			tiles[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/"+imagePath+".png"));
+			tiles[index].image = uTool.scaleImage(tiles[index].image, gp.tileSize, gp.tileSize);
+			tiles[index].colision = collision;
+		}catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -56,21 +65,21 @@ public class TileManager {
 	public void loadMap() {
 		
 		try {
-			InputStream is = getClass().getResourceAsStream("/mapas/Map1.txt");
+			InputStream is = getClass().getResourceAsStream("/mapas/Mundo.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			int col = 0;
 			int row = 0;
 			
-			while(col < gp.maxScreenCol && row < gp.maxScreenRow) {
+			while(col < gp.maxWorldCol && row < gp.maxWorldRow) {
 				String line = br.readLine();
-				while(col < gp.maxScreenCol) {
+				while(col < gp.maxWorldCol) {
 					
 					String numbers[] = line.split(" ");
 					int num = Integer.parseInt(numbers[col]);
 					mapTileNumber[col][row] = num;
 					col++;
 				}
-				if(col == gp.maxScreenCol) {
+				if(col == gp.maxWorldCol) {
 					col = 0;
 					row++;
 				}
@@ -84,24 +93,30 @@ public class TileManager {
 	
 	public void drawTile(Graphics2D g2) {
 		
-		int col = 0;
-		int row = 0;
-		int x = 0;
-		int y = 0;
+		int worldCol = 0;
+		int worldRow = 0;
 		
-		while(col < gp.maxScreenCol && row < gp.maxScreenRow) {
+		while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
 			
-			int tileNum = mapTileNumber[col][row];
+			int tileNum = mapTileNumber[worldCol][worldRow];
+			int worldX = worldCol * gp.tileSize;
+			int worldY = worldRow * gp.tileSize;
+			int screenX = worldX - gp.player.worldX + gp.player.screenX;
+			int screenY = worldY - gp.player.worldY + gp.player.screenY;
 			
-			g2.drawImage(tiles[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
-			col++;
-			x += gp.tileSize;
+			if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+				worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+				worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+				worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+				
+				g2.drawImage(tiles[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+			}
 			
-			if(col == gp.maxScreenCol) {
-				col = 0;
-				x = 0;
-				row++;
-				y += gp.tileSize;
+			worldCol++;
+			
+			if(worldCol == gp.maxWorldCol) {
+				worldCol = 0;
+				worldRow++;
 			}
 		}
 		
