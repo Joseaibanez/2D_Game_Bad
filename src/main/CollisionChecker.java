@@ -1,10 +1,17 @@
 package main;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import entity.Entity;
 
 public class CollisionChecker {
 
 	GamePanel gp;
+	// HITBOX
+	//g2.setColor(new Color(255,0,30));
+	//g2.fillRect(screenX, screenY, 100, 30);
+	// FIN DE HITBOX
 	
 	public CollisionChecker(GamePanel gp) {
 		this.gp = gp;
@@ -116,6 +123,7 @@ public class CollisionChecker {
 				entity.collisionArea.y = entity.collisionAreaDefaultY;
 				target[i].collisionArea.x = target[i].collisionAreaDefaultX;
 				target[i].collisionArea.y = target[i].collisionAreaDefaultY;
+				
 			}
 		}
 		
@@ -160,8 +168,11 @@ public class CollisionChecker {
 				break;
 		}
 		if(entity.collisionArea.intersects(gp.player.collisionArea)) {
+			entity.attacking = true;
 			entity.collisionOn = true;
 			contactPlayer = true;
+		} else {
+			entity.attacking = false;
 		}
 		entity.collisionArea.x = entity.collisionAreaDefaultX;
 		entity.collisionArea.y = entity.collisionAreaDefaultY;

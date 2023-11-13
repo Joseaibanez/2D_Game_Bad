@@ -31,9 +31,12 @@ public class Player extends Entity{
 		// Area solida del modelo
 		collisionArea = new Rectangle();
 		collisionArea.x = 8;
-		collisionArea.y = 40;
-		collisionArea.width = 10;
-		collisionArea.height = 5;
+		collisionArea.y = 16;
+		collisionArea.width = 50;
+		collisionArea.height = 60;
+		// Area de ataque del modelo
+		attackArea.width = 50;
+		attackArea.height = 20;
 		// Fin
 		type = 0;
 		setDefaultValues();
@@ -68,12 +71,12 @@ public class Player extends Entity{
 	
 	public void getPlayerAttackImage() {
 		// Animaciones de ataque
-		attackRight1 = setup("/player/AttackRight1.png", false, gp.tileSize, gp.tileSize);
-		attackRight2 = setup("/player/AttackRight2.png", false, gp.tileSize, gp.tileSize);
-		attackRight3 = setup("/player/AttackRight3.png", false, gp.tileSize, gp.tileSize);
-		attackLeft1 = setup("/player/AttackLeft1.png", false, gp.tileSize, gp.tileSize);
-		attackLeft2 = setup("/player/AttackLeft2.png", false, gp.tileSize, gp.tileSize);
-		attackLeft3 = setup("/player/AttackLeft3.png", false, gp.tileSize, gp.tileSize);
+		attackRight1 = setup("/player/AttackRight1.png", false, gp.tileSize, gp.tileSize*5);
+		attackRight2 = setup("/player/AttackRight2.png", false, gp.tileSize, gp.tileSize*5);
+		attackRight3 = setup("/player/AttackRight3.png", false, gp.tileSize, gp.tileSize*5);
+		attackLeft1 = setup("/player/AttackLeft1.png", false, gp.tileSize, gp.tileSize*5);
+		attackLeft2 = setup("/player/AttackLeft2.png", false, gp.tileSize, gp.tileSize*5);
+		attackLeft3 = setup("/player/AttackLeft3.png", false, gp.tileSize, gp.tileSize*5);
 	}
 	
 	
@@ -90,21 +93,14 @@ public class Player extends Entity{
 			//attacking = false;
 			if(keyH.upPressed == true) {
 				direction = "up";
-				//worldY -= speed;
 			} else if(keyH.downPressed == true) {
 				direction = "down";
-				//worldY += speed;
 			} else if(keyH.leftPressed == true) {
 				direction = "left";
 				isLookingRight = false;
-				//worldX -= speed;
 			} else if(keyH.rightPressed == true) {
 				direction = "right";
 				isLookingRight = true;
-				//worldX += speed;
-			} else if(keyH.attackPressed == true) {
-				//direction = "attack";
-				
 			}
 			
 			// Contador de sprites
@@ -177,6 +173,47 @@ public class Player extends Entity{
 		}
 		if(spriteCounter > 30 && spriteCounter <= 60) {
 			spriteNum = 2;
+			
+			// GUARDAR LA POSICION ACTUAL DEL MODELO
+			int currentWorldX = worldX;
+			int currentWorldY = worldY;
+			int collisionAreaWidth = collisionArea.width;
+			int collisionAreaHeight = collisionArea.height;
+			// AJUSTAR LA POSICION PARA EL ATAQUE
+			switch(direction) {
+				case "up":
+					if(!isLookingRight) {
+						worldX -= attackArea.width;
+					} else if(isLookingRight) {
+						worldX += attackArea.width;
+					}
+					break;
+				case "down":
+					if(!isLookingRight) {
+						worldX -= attackArea.width;
+					} else if(isLookingRight) {
+						worldX += attackArea.width;
+					}
+					break;
+				case "left":
+					worldX -= attackArea.width;
+					break;
+				case "right":
+					worldX += attackArea.width;
+					break;
+			}
+			collisionArea.width = attackArea.width;
+			collisionArea.height = attackArea.height;
+			
+			int monsterIndex = gp.colCheck.checkEntity(this,  gp.monsters);
+			damageMonster(monsterIndex);
+			// Despues de comprobar la colision restauramos los datos originales
+			worldX = currentWorldX;
+			worldY = currentWorldY;
+			collisionArea.width = collisionAreaWidth;
+			collisionArea.height = collisionAreaHeight;
+			
+			
 		}
 		if(spriteCounter > 60 && spriteCounter <= 70) {
 			spriteNum = 3;
@@ -203,12 +240,16 @@ public class Player extends Entity{
 	// en el panel de juego
 	public void drawPlayer(Graphics2D g2) {
 		BufferedImage image = null;
+		int tempScreenX = screenX;
+		int tempScreenY = screenY;
+		
 		switch(direction) {
 			case "idle":// Animacion del personaje parado
 				if(isLookingRight) {
 					if(!attacking) {
 						if(spriteNum == 1) {image = idleRight1;}
 						if(spriteNum == 2) {image = idleRight2;}
+						if(spriteNum == 3) {image = idleRight2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackRight1;}
@@ -219,6 +260,7 @@ public class Player extends Entity{
 					if(!attacking) {
 						if(spriteNum == 1) {image = idleLeft1;}
 						if(spriteNum == 2) {image = idleLeft2;}
+						if(spriteNum == 3) {image = idleLeft2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackLeft1;}
@@ -232,6 +274,7 @@ public class Player extends Entity{
 					if(!attacking) {
 						if(spriteNum == 1) {image = right1;}
 						if(spriteNum == 2) {image = right2;}
+						if(spriteNum == 3) {image = right2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackRight1;}
@@ -242,6 +285,7 @@ public class Player extends Entity{
 					if(!attacking) {
 						if(spriteNum == 1) {image = left1;}
 						if(spriteNum == 2) {image = left2;}
+						if(spriteNum == 3) {image = left2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackLeft1;}
@@ -255,6 +299,7 @@ public class Player extends Entity{
 					if(!attacking) {
 						if(spriteNum == 1) {image = right1;}
 						if(spriteNum == 2) {image = right2;}
+						if(spriteNum == 3) {image = right2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackRight1;}
@@ -265,6 +310,7 @@ public class Player extends Entity{
 					if(!attacking) {
 						if(spriteNum == 1) {image = left1;}
 						if(spriteNum == 2) {image = left2;}
+						if(spriteNum == 3) {image = left2;}
 					}
 					if(attacking) {
 						if(spriteNum == 1) {image = attackLeft1;}
@@ -276,7 +322,8 @@ public class Player extends Entity{
 			case "left":
 				if(!attacking) {
 					if(spriteNum == 1) {image = left1;}
-					if(spriteNum == 2) {image = left2;}	
+					if(spriteNum == 2) {image = left2;}
+					if(spriteNum == 3) {image = left2;}
 				}
 				if(attacking) {
 					if(spriteNum == 1) {image = attackLeft1;}
@@ -288,6 +335,7 @@ public class Player extends Entity{
 				if(!attacking) {
 					if(spriteNum == 1) {image = right1;}
 					if(spriteNum == 2) {image = right2;}
+					if(spriteNum == 3) {image = right2;}
 				}
 				if(attacking) {
 					if(spriteNum == 1) {image = attackRight1;}
@@ -297,22 +345,12 @@ public class Player extends Entity{
 				break;
 		}
 		g2.drawImage(image, screenX, screenY, null);
+		// HITBOX
+		//g2.setColor(new Color(255,0,30));
+		//g2.fillRect(screenX, screenY, 50, 20);
+		// FIN DE HITBOX
 		
 	}
-	
-	/*public void attack(Graphics2D g2) {
-		BufferedImage[] rightAttackImages = {attackRight1, attackRight2, attackRight3};
-		BufferedImage[] leftAttackImages = {attackLeft1, attackLeft2, attackLeft3};
-		if(isLookingRight) {
-			for(BufferedImage image : rightAttackImages) {
-				g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-			}
-		} else if(!isLookingRight) {
-			for(BufferedImage image : leftAttackImages) {
-				g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-			}
-		}
-	}*/
 	
 	public void contactMonster(int i) {
 		if(i != 999) {
@@ -320,6 +358,23 @@ public class Player extends Entity{
 				life--;
 				invencible = true;
 			}
+		}
+	}
+	
+	public void damageMonster(int i) {
+		if(i != 999) {
+			
+			if(gp.monsters[i].invencible == false) {
+				gp.monsters[i].life--;
+				System.out.println("DEMON LIFE: "+gp.monsters[i].life);
+				gp.monsters[i].invencible = true;
+				if(gp.monsters[i].life <= 0) {
+					gp.monsters[i].dying = true;
+				}
+			}
+		}
+		else {
+			//System.out.println("FALLO...");
 		}
 	}
 	

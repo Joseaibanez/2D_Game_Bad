@@ -1,5 +1,6 @@
 package monster;
 
+import java.awt.Color;
 import java.util.Random;
 
 import entity.Entity;
@@ -15,16 +16,18 @@ public class Demon extends Entity {
 			direction = "";
 			speed = 1;
 			getImage();
+			getDemonAttackImage();
 			name = "Red Demon";
 			maxLife = 4;
 			life = maxLife;
 			type = 2;
-			collisionArea.x = 3;
-			collisionArea.y = 18;
-			collisionArea.width = 42;
-			collisionArea.height = 30;
+			collisionArea.x = 5;
+			collisionArea.y = 10;
+			collisionArea.width = 90;
+			collisionArea.height = 50;
 			collisionAreaDefaultX = collisionArea.x;
 			collisionAreaDefaultY = collisionArea.y;
+			
 			
 		}
 		
@@ -42,6 +45,25 @@ public class Demon extends Entity {
 			left1 = setup("/demon/WalkLeft1.png", true, gp.tileSize, gp.tileSize);
 			left2 = setup("/demon/WalkLeft2.png", true, gp.tileSize, gp.tileSize);
 			
+		}
+		
+		public void getDemonAttackImage() {
+			// Animaciones de ataque
+			attackRight1 = setup("/demon/DemAttackRight1.png", true, gp.tileSize, gp.tileSize+20);
+			attackRight2 = setup("/demon/DemAttackRight2.png", true, gp.tileSize, gp.tileSize+20);
+			attackLeft1 = setup("/demon/DemAttackLeft1.png", true, gp.tileSize, gp.tileSize+20);
+			attackLeft2 = setup("/demon/DemAttackLeft2.png", true, gp.tileSize, gp.tileSize+20);
+			//attackRight3 = setup("/player/AttackRight3.png", false, gp.tileSize, gp.tileSize*5);
+			//attackLeft1 = setup("/player/AttackLeft1.png", false, gp.tileSize, gp.tileSize*5);
+			//attackLeft2 = setup("/player/AttackLeft2.png", false, gp.tileSize, gp.tileSize*5);
+			//attackLeft3 = setup("/player/AttackLeft3.png", false, gp.tileSize, gp.tileSize*5);
+		}
+		
+		public void getDeathImage() {
+			// ANIMACION MUERTE
+			death1 = setup("/demon/DemDeath1.png", true, gp.tileSize, gp.tileSize);
+			death2 = setup("/demon/DemDeath2.png", true, gp.tileSize, gp.tileSize);
+			death3 = setup("/demon/DemDeath3.png", true, gp.tileSize, gp.tileSize);
 		}
 		
 		public void setAction() {

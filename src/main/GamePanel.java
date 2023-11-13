@@ -17,6 +17,7 @@ import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 	
+	Graphics2D g2;
 	// Opciones de pantalla
 	final int originalTileSize = 20;
 	final int scale = 3;
@@ -99,7 +100,12 @@ public class GamePanel extends JPanel implements Runnable {
 			// MONSTERS
 			for(int i = 0; i < monsters.length; i++) {
 				if(monsters[i] != null) {
-					monsters[i].update();
+					if(monsters[i].alive && !monsters[i].dying) {
+						monsters[i].update();
+					}
+					if(!monsters[i].alive) {
+						monsters[i] = null;
+					}
 				}
 			}
 			// FIN
@@ -114,10 +120,9 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D)g;
+		g2 = (Graphics2D)g;
 		tileM.drawTile(g2);
 		player.drawPlayer(g2);
-		
 		// UI
 		ui.Draw(g2);
 		//NPC
@@ -151,9 +156,6 @@ public class GamePanel extends JPanel implements Runnable {
 			entityList.get(i).draw(g2);
 		}
 		// EMPTY ENTITY LIST
-		/*for(int i = 0; i < entityList.size(); i++) {
-			entityList.remove(i);
-		}*/
 		entityList.clear();
 	}
 

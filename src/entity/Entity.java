@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -25,18 +26,24 @@ public class Entity {
 	public BufferedImage idleRight1, idleRight2, idleLeft1, idleLeft2, up1, up2, down1, down2, left1, left2, right1, right2;
 	public String direction;
 	public BufferedImage attackRight1, attackRight2, attackRight3, attackLeft1, attackLeft2, attackLeft3;
+	public BufferedImage death1, death2, death3;
+	// MUERTE
+	public boolean alive = true;
+	public boolean dying = false;
 	// CONTADOR DE SPRITES PARA ANIMACIONES
 	public int spriteCounter = 0;
 	public int spriteNum = 1;
+	public int actionLockCounter = 0;
+	int dyingCounter = 0;
 	// AREA DE COLISIONES
 	public Rectangle collisionArea = new Rectangle(0, 0, 48, 48);
 	public boolean collisionOn = false;
-	// ATAQUE
-	boolean attacking = false;
-	//
-	public int actionLockCounter = 0;
 	public int collisionAreaDefaultX;
 	public int collisionAreaDefaultY;
+	// ATAQUE
+	public boolean attacking = false;
+	public Rectangle attackArea = new Rectangle(0,0,0,0);
+	//
 	// PERIODO DE INVENCIBILIDAD AL RECIBIR DAÑO
 	public boolean invencible = false;
 	public int invencibleCounter = 0;
@@ -90,6 +97,17 @@ public class Entity {
 					break;
 			}
 		}
+		// CONTADOR DE INVENCIBILIDAD DE MONSTRUO
+		if(type == 2) {
+			if(invencible) {
+				invencibleCounter++;
+				if(invencibleCounter > 60) {
+					invencible = false;
+					invencibleCounter = 0;
+				}
+			}
+		}
+		
 		sCounter();
 		
 	}
@@ -120,91 +138,128 @@ public class Entity {
 			switch(direction) {
 				case "idle":// Animacion del personaje parado
 					if(isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = idleRight1;
-								break;
-							case 2:
-								image = idleRight2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = idleRight1;}
+							if(spriteNum == 2) {image = idleRight2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackRight1;}
+							if(spriteNum == 2) {image = attackRight2;}
 						}
+						
 					} else if(!isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = idleLeft1;
-								break;
-							case 2:
-								image = idleLeft2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = idleLeft1;}
+							if(spriteNum == 2) {image = idleLeft2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackLeft1;}
+							if(spriteNum == 2) {image = attackLeft2;}
 						}
+						
 					}
 					break;
 				case "up":// Animacion de caminar hacia arriba
 					if(isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = right1;
-								break;
-							case 2:
-								image = right2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = right1;}
+							if(spriteNum == 2) {image = right2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackRight1;}
+							if(spriteNum == 2) {image = attackRight2;}
 						}
+						
 					} else if(!isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = left1;
-								break;
-							case 2:
-								image = left2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = left1;}
+							if(spriteNum == 2) {image = left2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackLeft1;}
+							if(spriteNum == 2) {image = attackLeft2;}
 						}
+						// FIN ARRIBA
 					}
 					break;
 				case "down":// Animacion de caminar hacia abajo
 					if(isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = right1;
-								break;
-							case 2:
-								image = right2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = right1;}
+							if(spriteNum == 2) {image = right2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackRight1;}
+							if(spriteNum == 2) {image = attackRight2;}
 						}
+						
 					} else if(!isLookingRight) {
-						switch(spriteNum) {
-							case 1:
-								image = left1;
-								break;
-							case 2:
-								image = left2;
-								break;
+						if(!attacking) {
+							if(spriteNum == 1) {image = left1;}
+							if(spriteNum == 2) {image = left2;}
+						} else if(attacking) {
+							if(spriteNum == 1) {image = attackLeft1;}
+							if(spriteNum == 2) {image = attackLeft2;}
 						}
+						
 					}
 					break;
 				case "left":// Animacion de caminar hacia la izquierda
-					switch(spriteNum) {
-						case 1:
-							image = left1;
-							break;
-						case 2:
-							image = left2;
-							break;
-					}				
+					if(!attacking) {
+						if(spriteNum == 1) {image = left1;}
+						if(spriteNum == 2) {image = left2;}	
+					} else if(attacking) {
+						if(spriteNum == 1) {image = attackLeft1;}
+						if(spriteNum == 2) {image = attackLeft2;}
+					}
+								
 					break;
 				case "right":// Animacion de caminar hacia la derecha
+					if(!attacking) {
+						if(spriteNum == 1) {image = right1;}
+						if(spriteNum == 2) {image = right2;}
+					} else if(attacking) {
+						if(spriteNum == 1) {image = attackRight1;}
+						if(spriteNum == 2) {image = attackRight2;}
+					}
+					
+					break;
+				case "dead":
 					switch(spriteNum) {
 						case 1:
-							image = right1;
+							image = death1;
 							break;
 						case 2:
-							image = right2;
+							image = death2;
 							break;
 					}
 					break;
 			}
 			// FIN
 			
+			// BARRA DE VIDA DE MONSTRUO
+			if(type == 2) {
+				
+				double oneScale = (double)gp.tileSize/maxLife;
+				double hpBarValue = oneScale*life;
+				
+				//g2.setColor(new Color(35,35,35));
+				//g2.fillRect(screenX, screenX - 15, gp.tileSize, 10);
+				g2.setColor(new Color(255,0,30));
+				g2.fillRect(screenX, screenY - 15, (int)hpBarValue, 10);
+				
+			}
+			
+			if(dying) {
+				direction = "dead";
+				dyingAnimation(g2);
+			}
 			g2.drawImage(image, screenX, screenY, null);
+			
+			
+		}
+	}
+	
+	public void dyingAnimation(Graphics2D g2) {
+		dyingCounter++;
+		if(dyingCounter <= 40) {
+			dying = false;
+			alive = false;
 		}
 	}
 	
